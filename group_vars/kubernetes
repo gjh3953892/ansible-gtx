@@ -1,0 +1,11 @@
+all_tcp: 6443
+api_etcd_tcp: [0-9]
+kblet_tcp: 10250
+kbscheduleri_tcp: 10251
+kecontroller_manager_tcp: 10252
+sys_cgroup: 'true'
+download_dir: /usr/local/bin
+release: v1.21.1
+sandbox_image: k8s.gcr.io/pause:3.4.1
+endpoint: https://registry.cn-hangzhou.aliyuncs.com
+

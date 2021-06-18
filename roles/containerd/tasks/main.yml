@@ -1,0 +1,83 @@
+---
+# tasks file for containerd
+- name: 安装containerd-1.5.2先决条件1
+  script:
+    cmd: contaicnf.sh
+
+- name: 安装containerd-1.5.2先决条件2
+  script:
+    cmd: kube-cri-cnf.sh
+
+- name: 传送containerd-1.5.2二进制到主机
+  copy:
+    src: containerd-1.5.2-linux-amd64.tar.gz
+    dest: /usr/local
+    force: no
+    owner: root
+    group: root
+    
+- name: 传送containerd-1.5.2守护进程到主机  
+  copy:
+    src: containerd-1.5.2.tar.gz
+    dest: /usr/local
+    force: no
+    owner: root
+    group: root
+
+- name: 解压containerd-1.5.2二进制
+  unarchive:
+    src: /usr/local/containerd-1.5.2-linux-amd64.tar.gz
+    dest: /usr/local
+    keep_newer: yes
+    remote_src: yes
+
+- name: 解压containerd-1.5.2二进制
+  unarchive:
+    src: /usr/local/containerd-1.5.2.tar.gz
+    dest: /usr/local
+    keep_newer: yes
+    remote_src: yes
+
+- name: 配置containerd
+  file:
+    path: /etc/containerd
+    state: directory
+
+- name: 配置containerd cnf
+  template:
+    src: config.j2
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: u=rwx,g=r,o=r
+    output_encoding: utf-8    
+
+- name: 将containerd加入systemd服务
+  file:
+    src: /usr/local/containerd-1.5.2/containerd.service
+    dest: /lib/systemd/system/containerd.service
+    owner: root
+    group: root
+    state: link
+
+- name: 设置开机启动containerd服务
+  command:
+    cmd: systemctl enable containerd
+
+- name: 重启containerd服务
+  command:
+    cmd: systemctl restart containerd
+
+- name: 创建RUNC目录
+  file:
+    path: /usr/local/sbin
+    state: directory
+
+- name: 传送runc
+  copy:
+    src: runc
+    dest: /usr/local/sbin/
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+

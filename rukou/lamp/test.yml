@@ -1,0 +1,6 @@
+- name: test huanjingbianliang
+  hosts: lcy172
+  remote_user: root
+
+  roles:
+    - test

@@ -1,0 +1,20 @@
+- name: apply common configuration to all nodes
+  hosts: lcy173
+  remote_user: root
+
+  roles:
+    - common
+
+- name: configure and deploy the webservers and application code
+  hosts: lcy173
+  remote_user: root
+
+  roles:
+    - web
+
+- name: deploy MySQL and configure the databases
+  hosts: lcy173
+  remote_user: root
+
+  roles:
+    - db

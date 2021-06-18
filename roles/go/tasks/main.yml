@@ -1,0 +1,34 @@
+---
+# tasks file for go
+- name: 安装go之前清理旧版本安装
+  command:
+    cmd: rm -rf /usr/local/go
+
+- name: 传送本地go安装包到环境
+  copy:
+    src: go1.16.5.linux-amd64.tar.gz 
+    dest: /usr/local
+    owner: root
+    group: root
+
+- name: 解压go安装包
+  command:
+    chdir: /usr/local
+    creates: /usr/local/go
+    cmd: tar -xzf go1.16.5.linux-amd64.tar.gz
+
+- name: 检查是否包含go环境变量
+  shell: sed '/\go\/bin/!d' /etc/profile
+  register: foo_result
+  ignore_errors: True
+
+- name: 写入环境变量
+  shell: echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+  when: foo_result.stdout != 'export PATH=$PATH:/usr/local/go/bin'
+
+- name: 使环境变量生效
+  shell:
+    cmd: source /etc/profile
+    
+
+    

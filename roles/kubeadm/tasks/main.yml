@@ -1,0 +1,40 @@
+---
+# tasks file for kubeadm
+- name: 传送解压kubeadm
+  unarchive:
+    src: kubeadm.tgz
+    dest: /usr/local/bin
+    keep_newer: yes
+    remote_src: no
+    owner: root
+    group: root    
+    mode: u=rwx,g=rx,o=rx
+
+- name: 传送kubelet配置文件
+  copy:
+    src: kubelet.service
+    dest: /etc/systemd/system/
+    force: yes
+    owner: root
+    group: root
+
+- name: 传送kubeadm配置文件        
+  copy:
+    src: 10-kubeadm.conf
+    dest: /etc/systemd/system/kubelet.service.d/
+    force: yes
+    owner: root
+    group: root
+
+- name: 激活并启动kubelet
+  command:
+    cmd: systemctl enable --now kubelet
+
+- name: 传送flannel-DaemonSet
+  copy:
+    src: kube-flannel.yml
+    dest: /root
+    force: yes
+    owner: root
+    group: root
+

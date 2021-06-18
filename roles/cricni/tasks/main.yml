@@ -1,0 +1,32 @@
+---
+# tasks file for cricni
+- name: 创建CNI目录
+  file:
+    path: /opt/cni/bin
+    state: directory
+
+- name: 安装CNI-传送CNI
+  unarchive:
+    src: cni-plugins-linux-amd64-v0.9.1.tgz
+    dest: /opt/cni/bin
+    keep_newer: yes
+    remote_src: no
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
+- name: 安装CRI-传送CRI
+  unarchive:
+    src: crictl-v1.21.0-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    keep_newer: yes
+    remote_src: no
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
+- name: 设置crictl使用containerd
+  command:
+    cmd: crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
+
+

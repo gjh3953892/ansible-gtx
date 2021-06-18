@@ -1,0 +1,42 @@
+---
+# tasks file for initenv
+- name: 安装之前打开iptables流量
+  script:
+    cmd: k8s-cnf.sh
+
+- name: 关闭防火墙
+  command:
+    cmd: systemctl stop firewalld
+
+- name: 永久关闭防火墙
+  command:
+    cmd: systemctl disable firewalld
+
+- name: 检查swap
+  shell: sed '/swap/!d' /etc/fstab |head -1 |awk '{print $2}'
+  register: foo_swap
+  ignore_errors: True
+
+- name: 临时关闭swap
+  shell: swapoff -a
+
+- name: 关闭swap
+  shell: sed -i '/swap/d' /etc/fstab
+  when: foo_swap.stdout == 'swap'
+
+- name: 关闭selinux1
+  raw: sed -i 's/enforcing/disabled/' /etc/selinux/config
+
+- name: 关闭selinux2
+  raw: setenforce 0
+
+- name: 安装socat
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - socat
+      - conntrack-tools
+      - net-tools
+      - lrzsz
+    state: installed

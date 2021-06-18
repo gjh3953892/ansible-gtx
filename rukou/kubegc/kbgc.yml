@@ -1,0 +1,12 @@
+- name: kubenetes init
+  hosts: kubernetes
+  remote_user: root
+
+  roles:
+    - initenv
+    - kubectl
+    - go
+    - containerd
+    - cricni 
+    - callimages
+    - kubeadm

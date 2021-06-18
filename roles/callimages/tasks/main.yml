@@ -1,0 +1,23 @@
+---
+# tasks file for callimages
+
+- name: 创建镜像目录
+  file:
+    path: /usr/local/fsimages
+    state: directory
+
+
+- name: 拷贝解压镜像到目录
+  unarchive:
+    src: zeng.tgz
+    dest: /usr/local/fsimages
+    keep_newer: yes
+    remote_src: no
+    owner: root
+    group: root
+
+- name: 导入镜像
+  script:
+    chdir: /usr/local/fsimages
+    cmd: loadimg.sh
+    

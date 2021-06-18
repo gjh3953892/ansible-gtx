@@ -1,0 +1,21 @@
+---
+# tasks file for kubectl
+- name: 端口占用检查
+  wait_for:
+    port: '{{ item }}'
+    delay: 5
+    state: stopped
+    timeout: 300
+  with_items:
+    - '{{ all_tcp }}'
+    - '{{ kblet_tcp }}'
+    - '{{ kbscheduleri_tcp }}'
+    - '{{ kecontroller_manager_tcp }}'
+
+- name: 添加kubectl
+  copy:
+    src: kubectl 
+    dest: /usr/bin/
+    owner: root
+    group: root
+    mode: '0755' 
