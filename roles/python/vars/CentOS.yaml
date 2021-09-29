@@ -1,0 +1,6 @@
+---
+# vars file for python
+pywdir: /usr/local/app/python/py3
+pyundir: /usr/local/app/python
+pyversion: Python-3.9.5.tgz
+

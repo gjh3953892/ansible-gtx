@@ -1,0 +1,46 @@
+---
+- name: remove pyundir
+  command: rm -rf {{pyundir}}
+
+- name: create pydir
+  command: mkdir -p {{pywdir}}
+
+- name: package delivery
+  copy: src=Python-3.9.5.tgz dest={{pyundir}}/{{pyversion}}
+
+- name: unpackage 
+  unarchive: src={{pyundir}}/{{pyversion}} dest={{pyundir}} remote_src=yes
+
+- name: anzhuang yilai
+  yum: name=gcc,patch,libffi-devel,python-devel,zlib-devel,bzip2-devel,openssl-devel,ncurses-devel,sqlite-devel,readline-devel,tk-devel,gdbm-devel,libpcap-devel,xz-devel state=present
+
+- name:  python3 configure
+  command:
+    cmd: ./configure --prefix={{pywdir}}
+    chdir: /usr/local/app/python/Python-3.9.5
+
+- name: make python3
+  make:
+    chdir: /usr/local/app/python/Python-3.9.5
+    target: install
+    file: /usr/local/app/python/Python-3.9.5/Makefile
+
+- name: remove link
+  command:
+    cmd: rm -rf /usr/bin/python3 /usr/bin/pip
+
+- name: link python
+  command:
+    argv:
+      - ln
+      - -s
+      - /usr/local/app/python/py3/bin/python3.9
+      - /usr/bin/python3
+
+- name: link pip
+  command:
+    argv:
+      - ln
+      - -s
+      - /usr/local/app/python/py3/bin/pip3.9
+      - /usr/bin/pip

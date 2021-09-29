@@ -1,0 +1,11 @@
+---
+# tasks file for python
+- name: env
+  include_vars: "{{ ansible_distribution }}.yaml"
+
+- include_tasks: python-centos.yaml
+  when: ansible_distribution == 'CentOS'
+
+- include_tasks: python-ubuntu.yaml
+  when: ansible_distribution == 'Ubuntu'
+
