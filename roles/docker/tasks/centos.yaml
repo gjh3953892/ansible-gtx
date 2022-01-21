@@ -1,109 +1,37 @@
 ---
 # tasks file for postgresql
 
-- name: 创建postgresql数据目录
+- name: 创建docker解压目录
   file:
-    path: "{{ postsql_data }}"
+    path: "{{ docker_app }}"
     state: directory
 
-- name: 创建postgresql日志目录
-  file:
-    path: "{{ postsql_logs }}"
-    state: directory
-
-- name: 创建postgresql解压目录
-  file:
-    path: "{{ postsql_un }}"
-    state: directory
-
-- name: 传送到主机
+- name: 传送docker二进制包到主机
   copy:
-    src: "{{ postsql_package }}"
-    dest: "{{ postsql_dwdir }}"
+    src: "{{ docker_package }}"
+    dest: "{{ docker_dw }}"
     # 仅当目标目录不存在文件时才会传送文件
     force: no
     owner: root
     group: root
 
-- name: 解压postgresql
+- name: 解压docker二进制包
   unarchive:
-    src: "{{ postsql_dwdir }}/{{ postsql_package }}"
-    dest: "{{ postsql_un }}"
+    src: "{{ docker_dw }}/{{ docker_package }}"
+    dest: "{{ docker_app }}"
     owner: root
     group: root
+    mode: 751
     # 表示文件如果已经存在，就不会继续上传
     keep_newer: yes
     # 表示需要解压的文件已经存在在远端，而不是在控制节点
     remote_src: yes
 
-
-- name: postgresql configure
-  command:
-    cmd: ./configure --prefix={{ postsql_app }}
-    chdir: "{{ postsql_un }}/{{ postsql_version }}"
-
-- name: make postgresql
-  make:
-    chdir: "{{ postsql_un }}/{{ postsql_version }}"
-    target: install
-    file: "{{ postsql_un }}/{{ postsql_version }}/Makefile"
-
-- name: 修改postgresql应用目录权限
-  ansible.builtin.file:
-    path: "{{ postsql_app }}"
-    state: directory
-    recurse: yes
-    owner: "{{ postsql_user }}"
-    group: "{{ postsql_group }}"
-
-- name: 检查是否存在java环境变量
-  shell: sed '/# Postgresql Env/!d' /etc/profile
-  register: postsql_result
-  ignore_errors: True
-
-- name: 写入Postgresql环境变量
-  shell:
-    cmd: |
-      echo '# Postgresql Env
-      export PGHOME=/data/pg
-      export PGDATA=/data/pg/data
-      export PATH=$PGHOME/bin:$PATH' >> /etc/profile
-  when: postsql_result.stdout == ''
-  notify: env take_effect
-
-- name: 检查是已经初始化Postgresql
-  shell: if [ -f "{{ postsql_data }}/pg_hba.conf" ];then echo "exist";fi
-  register: postinit_result
-  ignore_errors: True
-
-  #- name: bug message
-  #debug: var=postinit_result.stdout
-
-- name: 初始化数据库
-  remote_user: "{{ postsql_user }}"
-  shell:
-    cmd: |
-      ./initdb -D {{ postsql_data }}
-    chdir: "{{ postsql_app }}/bin"
-  when: postinit_result.stdout == ''
-  notify: pg start
-
-- name: 配置pg_hba.conf配置文件 
-  community.postgresql.postgresql_pg_hba:
-    dest: "{{ postsql_data }}/pg_hba.conf"
-    contype: host
-    users: all
-    source: 0.0.0.0/0
-    databases: all
-    method: md5
-    create: no
-
-- name: 配置postgresql.conf
-  template:
-    src: postgresql.j2
-    dest: "{{ postsql_data }}/postgresql.conf"
-    owner: yunst
-    group: yunst
-    mode: u=rw,g=r,o=r
-    output_encoding: utf-8
-  notify: pg restart
+- name: 拷贝docker二进制文件
+  copy:
+    src: "{{ docker_app }}/docker"
+    dest: "{{ docker_us }}"
+    owner: foo
+    group: foo
+    mode: '0644'
+    remote_src: yes
