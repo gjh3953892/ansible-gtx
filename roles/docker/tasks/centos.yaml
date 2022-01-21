@@ -6,6 +6,11 @@
     path: "{{ docker_app }}"
     state: directory
 
+- name: 创建docker配置文件目录
+  file:
+    path: "{{ docker_daemon }}"
+    state: directory
+
 - name: 传送docker二进制包到主机
   copy:
     src: "{{ docker_package }}"
