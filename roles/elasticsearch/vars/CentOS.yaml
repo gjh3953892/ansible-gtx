@@ -1,0 +1,33 @@
+---
+# vars file for elasticsearch
+# es使用的用户
+es_user: "es"
+
+# es的用户组
+es_group: "es"
+
+# es传送到远端的路径
+es_dwdir: "/usr/local"
+
+# es版本
+es_version: "elasticsearch-7.8.0"
+
+# es的数据目录
+es_datadir: "/opt/soft/es/data"
+
+# es的日志目录
+es_logdir: "/opt/soft/es/logs"
+
+# es包的名字 (注意要和file文件夹里面包的名字一致)
+es_package: "elasticsearch-7.8.0-linux-x86_64.tar.gz"
+
+# es包解压的路径
+es_dir: "/opt/soft/es"
+
+# /etc/security/limits.conf 文件路径
+es_limitscnf: "/etc/security/limits.conf"
+es_limits7cnf: "/etc/security/limits.d/20-nproc.conf"
+es_sysctlcnf: "/etc/sysctl.conf"
+
+# es配置文件
+nodename: "node-1"

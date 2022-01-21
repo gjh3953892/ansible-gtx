@@ -1,0 +1,72 @@
+---
+# tasks file for javajdk
+
+- name: 创建elasticsearch安装目录
+  file:
+    path: "{{ es_dir }}"
+    state: directory
+
+- name: 传送到主机
+  copy:
+    src: "{{ es_version }}"
+    dest: "{{ es_dwdir }}"
+    # 仅当目标目录不存在文件时才会传送文件
+    force: no
+    owner: root
+    group: root
+
+- name: 解压elasticsearch
+  unarchive:
+    src: "{{ es_dwdir }}{{ es_version }}"
+    dest: "{{ es_dir }}"
+    owner: "{{ es_user }}"
+    group: "{{ es_group }}"
+    # 表示文件如果已经存在，就不会继续上传
+    keep_newer: yes
+    # 表示需要解压的文件已经存在在远端，而不是在控制节点
+    remote_src: yes
+
+- name: 检查limits.conf文件是否已经存在关于es的配置项
+  shell: sed "/# Elasticsearch file limits/!d" "{{ es_limitscnf }}"
+  register: es_result
+  ignore_errors: True
+
+- name: 配置es需要的最大文件打开数，最大进程数
+  shell:
+    cmd: |
+      echo "# Elasticsearch file limits
+      es soft nofile 65536
+      es hard nofile 65536
+      es soft nproc 4096
+      es hard nproc 4096" >> "{{ es_limitscnf }}"
+  when: es_result.stdout == ""
+
+- name: 检查20-nproc.conf文件是否已经存在关于es的配置项
+  shell: sed "/# Elasticsearch file limits/!d" "{{ es_limits7cnf }}"
+  register: es7_result
+  ignore_errors: True
+
+- name: 20-nproc.conf-配置es需要的最大文件打开数，最大进程数
+  shell:
+    cmd: |
+      echo "# Elasticsearch file limits
+      es soft nproc 4096
+      root soft nproc unlimited" >> "{{ es_limits7cnf }}"
+  when: es7_result.stdout == ""
+
+- name: 检查sysctl.conf文件是否已经存在关于es的配置项
+  shell: sed "/# Elasticsearch file limits/!d" "{{ es_sysctlcnf }}"
+  register: sysctl_result
+  ignore_errors: True
+
+- name: sysctl.conf-配置es一个进程拥有的虚拟内存vma的数量
+  shell:
+    cmd: |
+      echo "# Elasticsearch file limits
+      vm.max_map_count = 655360" >> "{{ es_sysctlcnf }}"
+  when: sysctl_result.stdout == ""
+
+
+- name: 使limits.conf配置生效
+  shell: sysctl -p
+ 

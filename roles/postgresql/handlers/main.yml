@@ -1,0 +1,21 @@
+---
+# handlers file for postgresql
+
+- name: env take_effect
+  shell:
+    cmd: source /etc/profile
+
+- name: pg start
+  remote_user: "{{ postsql_user }}"
+  shell:
+    cmd: |
+      ./pg_ctl -D {{ postsql_data }} -l {{ postsql_logs }}/pgsql.log start
+    chdir: "{{ postsql_app }}/bin"
+
+- name: pg restart
+  remote_user: "{{ postsql_user }}"
+  shell:
+    cmd: |
+      ./pg_ctl -D {{ postsql_data }} -l {{ postsql_logs }}/pgsql.log restart
+    chdir: "{{ postsql_app }}/bin"
+

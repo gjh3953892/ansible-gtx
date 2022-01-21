@@ -1,0 +1,27 @@
+---
+# tasks file for useradds
+- name: 添加一个es组
+  group:
+    name: es
+    state: present
+    gid: 1021
+
+- name: 添加一个名为elasticsearch，uid为1021的用户
+  user:
+    name: es
+    comment: gc add es
+    uid: 1021
+    group: es
+
+- name: 添加一个yunst组
+  group:
+    name: yunst
+    state: present
+    gid: 1023
+
+- name: 添加一个名为yunst，uid为1023的用户
+  user:
+    name: yunst
+    comment: gc add yunst
+    uid: 1023
+    group: yunst

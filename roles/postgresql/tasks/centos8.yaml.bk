@@ -1,0 +1,77 @@
+---
+# tasks file for postgresql
+
+
+- name: 创建postgresql依赖rpm目录
+  file:
+    path: "{{ postsql_relyon }}"
+    state: directory
+
+
+- name: 创建postgresql数据目录
+  file:
+    path: "{{ postsql_data }}"
+    state: directory
+
+- name: 创建postgresql日志目录
+  file:
+    path: "{{ postsql_logs }}"
+    state: directory
+
+- name: 创建postgresql解压目录
+  file:
+    path: "{{ postsql_un }}"
+    state: directory
+
+- name: 传送到主机
+  copy:
+    src: "{{ postsql_package }}"
+    dest: "{{ postsql_dwdir }}"
+    # 仅当目标目录不存在文件时才会传送文件
+    force: no
+    owner: root
+    group: root
+
+- name: 解压postgresql
+  unarchive:
+    src: "{{ postsql_dwdir }}/{{ postsql_package }}"
+    dest: "{{ postsql_un }}"
+    owner: root
+    group: root
+    # 表示文件如果已经存在，就不会继续上传
+    keep_newer: yes
+    # 表示需要解压的文件已经存在在远端，而不是在控制节点
+    remote_src: yes
+
+- name: 拷贝解压rpm到目录
+  unarchive:
+    src: postsqlrpm.tgz
+    dest: "{{ postsql_relyon }}"
+    keep_newer: yes
+    remote_src: no
+    owner: root
+    group: root
+
+- name: 安装rpm
+  shell:
+    chdir: "{{ postsql_relyon }}"
+    cmd: |
+      ls *.rpm |xargs rpm -ivh --nodeps --force
+
+
+- name: postgresql configure
+  command:
+    cmd: ./configure --prefix={{ postsql_app }}
+    chdir: "{{ postsql_un }}/{{ postsql_version }}"
+
+- name: make postgresql
+  make:
+    chdir: "{{ postsql_un }}/{{ postsql_version }}"
+    target: install
+    file: "{{ postsql_un }}/{{ postsql_version }}/Makefile"
+
+- name: 修改postgresql应用目录权限
+  ansible.builtin.file:
+    path: "{{ postsql_app }}"
+    owner: "{{ postsql_user }}"
+    group: "{{ postsql_group }}"

@@ -1,0 +1,6 @@
+---
+# tasks file for javajdk
+
+- name: 传送到主机
+  debug:
+    msg: "{{ es_dir }}/{{ es_version }}/bin/elasticsearch-certutil"

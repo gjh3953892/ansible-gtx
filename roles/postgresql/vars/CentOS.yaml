@@ -1,0 +1,24 @@
+---
+# vars file for postgresql
+# postgresql使用的用户
+postsql_user: "yunst"
+# postgresql用户所在的组
+postsql_group: "yunst"
+# postgresql的版本
+postsql_version: "postgresql-11.5"
+# postgresql包的名字
+postsql_package: "postgresql-11.5.tar.gz"
+# pastgresql依赖rpm目录
+postsql_relyon: "/usr/local/postsqlrpm"
+# 传送到远端服务器的目录
+postsql_dwdir: "/usr/local"
+# 远端postgresql解压目录
+postsql_un: "/usr/local/app"
+# postgresql应用目录
+postsql_app: "/data/pg"
+# postgresql数据目录
+postsql_data: "/data/pg/data"
+# postgresql日志目录
+postsql_logs: "/data/pg/log"
+# max_connections
+max_connections: "1000"
