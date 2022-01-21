@@ -38,7 +38,7 @@
 - name: 给docker二进制赋权限
   shell:
     cmd: |
-      chmod -R 755 "{{ docker_us }}/{{ item }}"           
+      chmod -R 755 "{{ docker_us }}/{{ item }}"
   with_items:
     - containerd
     - containerd-shim
@@ -48,3 +48,30 @@
     - docker-init
     - docker-proxy
     - runc
+
+- name: 添加daemon.json配置文件
+  template:
+    src: daemon.j2
+    dest: "{{ docker_daemon }}/daemon.json"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+    output_encoding: utf-8
+
+- name: 添加docker.service配置文件
+  template:
+    src: docker.service
+    dest: "{{ docker_daemon }}/docker.service"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+    output_encoding: utf-8
+
+- name: 添加docker.socket配置文件
+  template:
+    src: docker.socket
+    dest: "{{ docker_daemon }}/docker.socket"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+    output_encoding: utf-8
