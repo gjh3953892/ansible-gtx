@@ -1,2 +1,7 @@
 ---
 # handlers file for docker
+
+- name: docker start
+  shell:
+    cmd: |
+      systemctl start docker

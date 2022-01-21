@@ -72,11 +72,13 @@
     mode: u=rwx,g=rx,o=rx
     output_encoding: utf-8
 
-- name: 添加docker.socket配置文件
-  template:
-    src: docker.socket
-    dest: "{{ docker_service }}/docker.socket"
-    owner: root
-    group: root
-    mode: u=rwx,g=rx,o=rx
-    output_encoding: utf-8
+- name: systemd重新加载docker配置
+  shell:
+    cmd: |
+      systemctl daemon-reload
+
+- name: 启动docker守护进程
+  shell:
+    cmd: |
+      systemctl enable docker
+  notify: docker start
