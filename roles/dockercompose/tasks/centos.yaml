@@ -1,0 +1,13 @@
+---
+# tasks file for dockercompose
+
+
+- name: 传送docker二进制包到主机
+  copy:
+    src: "{{ compose_package }}"
+    dest: "{{ compose_dir }}"
+    # 仅当目标目录不存在文件时才会传送文件
+    force: no
+    mode: u=rwx,g=rx,o=rx
+    owner: root
+    group: root

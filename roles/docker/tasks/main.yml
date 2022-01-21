@@ -1,5 +1,5 @@
 ---
-# tasks file for javajdk
+# tasks file for docker
 - name: env
   include_vars: "{{ ansible_distribution }}.yaml"
 

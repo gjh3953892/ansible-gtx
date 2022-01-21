@@ -1,2 +1,5 @@
 ---
 # vars file for dockercompose
+
+compose_package: "docker-compose-1.29.2"
+compose_dir: "/usr/local/bin"
