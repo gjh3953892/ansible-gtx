@@ -21,17 +21,30 @@
     dest: "{{ docker_app }}"
     owner: root
     group: root
-    mode: 751
+    mode: '0751'
     # 表示文件如果已经存在，就不会继续上传
     keep_newer: yes
-    # 表示需要解压的文件已经存在在远端，而不是在控制节点
     remote_src: yes
 
 - name: 拷贝docker二进制文件
   copy:
-    src: "{{ docker_app }}/docker"
+    src: "{{ docker_app }}/docker/"
     dest: "{{ docker_us }}"
-    owner: foo
-    group: foo
-    mode: '0644'
+    owner: root
+    group: root
+    mode: '0755'
     remote_src: yes
+
+- name: 给docker二进制赋权限
+  shell:
+    cmd: |
+      chmod -R 755 "{{ docker_us }}/{{ item }}"           
+  with_items:
+    - containerd
+    - containerd-shim
+    - docker
+    - ctr
+    - dockerd
+    - docker-init
+    - docker-proxy
+    - runc
